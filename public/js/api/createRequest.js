@@ -25,7 +25,6 @@ const createRequest = (options = {}) => {
 	}
 
 	const xhr = new XMLHttpRequest();
-	console.log('Отправляем запрос:', options.method, options.url);
 
 	let requestUrl = options.url;
 
