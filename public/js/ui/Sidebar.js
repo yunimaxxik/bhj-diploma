@@ -1,3 +1,5 @@
+const { response } = require('express');
+
 /**
  * Класс Sidebar отвечает за работу боковой колонки:
  * кнопки скрытия/показа колонки в мобильной версии сайта
@@ -33,16 +35,39 @@ class Sidebar {
 	 * выходу устанавливает App.setState( 'init' )
 	 * */
 	static initAuthLinks() {
-		const login = App.getModal('login');
-		document.querySelector('.menu-item_login').addEventListener('click', () => {
-			login.open();
-		});
+		document
+			.querySelector('.menu-item_login')
+			.addEventListener('click', (event) => {
+				event.preventDefault();
 
-		const register = App.getModal('register');
+				const login = App.getModal('login');
+				login.open();
+			});
+
 		document
 			.querySelector('.menu-item_register')
-			.addEventListener('click', () => {
+			.addEventListener('click', (event) => {
+				event.preventDefault();
+
+				const register = App.getModal('register');
 				register.open();
+			});
+		document
+			.querySelector('.menu-item_logout')
+			.addEventListener('click', (event) => {
+				event.preventDefault();
+				User.logout((err, response) => {
+					if (err) {
+						console.error('Ошибка при выходе:', err);
+						return;
+					}
+
+					if (response.success) {
+						App.setState('init');
+					} else {
+						console.warn('Выход не подтверждён сервером');
+					}
+				});
 			});
 	}
 }
