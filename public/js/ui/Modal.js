@@ -14,12 +14,12 @@ class Modal {
 	constructor(element) {
 		if (!element) {
 			throw new Error(
-				'Конструктор Widget: элемент не передан или равен null/undefined',
+				'Конструктор Modal: элемент не передан или равен null/undefined',
 			);
 		}
 
 		this.element = element;
-		registerEvents();
+		this.registerEvents();
 	}
 
 	/**
