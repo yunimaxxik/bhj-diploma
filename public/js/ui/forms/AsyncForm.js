@@ -18,6 +18,7 @@ class AsyncForm {
 				'Конструктор AsyncForm: элемент не передан или равен null/undefined',
 			);
 		}
+
 		this.element = element;
 		this.registerEvents();
 	}

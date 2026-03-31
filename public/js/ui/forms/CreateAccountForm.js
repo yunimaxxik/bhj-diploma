@@ -14,7 +14,10 @@ class CreateAccountForm extends AsyncForm {
 				console.error('Ошибка при получении списка счетов:', err);
 				return;
 			}
-			this.element.clear();
+
+			const modal = App.getModal('modal-new-account');
+			if (modal) modal.close();
+			this.element.reset();
 			App.update();
 		});
 	}

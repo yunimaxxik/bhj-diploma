@@ -3,78 +3,46 @@
  * на сервер.
  * */
 const createRequest = (options = {}) => {
-	if (!options.url) {
-		const error = new Error('createRequest: параметр url обязателен');
-		if (options.callback) {
-			options.callback(error, null);
-		}
-		return;
-	}
-
-	if (!options.method) {
-		const error = new Error('createRequest: параметр method обязателен');
-		if (options.callback) {
-			options.callback(error, null);
-		}
-		return;
-	}
-
-	if (!options.callback) {
-		console.warn('createRequest: callback не передан');
-		return;
+	const { url, data = {}, method = 'GET', callback = () => {} } = options;
+	let requestUrl = url;
+	if (method === 'GET' && Object.keys(data).length) {
+		const params = Object.entries(data)
+			.map(
+				([key, value]) =>
+					`${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+			)
+			.join('&');
+		requestUrl += (requestUrl.includes('?') ? '&' : '?') + params;
 	}
 
 	const xhr = new XMLHttpRequest();
-
-	let requestUrl = options.url;
-
-	if (options.method.toUpperCase() === 'GET' && options.data) {
-		const params = Object.entries(options.data)
-			.filter(([_, value]) => value != null)
-			.map(
-				([key, value]) =>
-					`${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
-			)
-			.join('&');
-
-		const separator = options.url.includes('?') ? '&' : '?';
-		requestUrl = `${options.url}${separator}${params}`;
-	}
-
 	try {
-		xhr.open(options.method, requestUrl);
+		xhr.open(method, requestUrl);
 		xhr.responseType = 'json';
+
+		let body = null;
+		if (method !== 'GET') {
+			const formData = new FormData();
+			Object.entries(data).forEach(([key, value]) =>
+				formData.append(key, value),
+			);
+			body = formData;
+		}
 
 		xhr.onload = () => {
 			if (xhr.status >= 200 && xhr.status < 300) {
-				options.callback(null, xhr.response);
+				callback(null, xhr.response);
 			} else {
-				const error = new Error(
-					`Request failed: ${xhr.status} ${xhr.statusText} for ${options.url}`,
-				);
-				options.callback(error, null);
+				callback(new Error(xhr.statusText), null);
 			}
 		};
 
 		xhr.onerror = () => {
-			const error = new Error(`Network error for ${options.url}`);
-			console.error('Network Error:', error.message);
-			options.callback(error, null);
+			callback(new Error('Network error'), null);
 		};
 
-		if (options.method.toUpperCase() !== 'GET' && options.data) {
-			const formData = new FormData();
-			Object.entries(options.data).forEach(([key, value]) => {
-				if (value != null) {
-					formData.append(key, value);
-				}
-			});
-			xhr.send(formData);
-		} else {
-			xhr.send();
-		}
-	} catch (error) {
-		console.error('Ошибка при выполнении запроса:', error);
-		options.callback(error, null);
+		xhr.send(body);
+	} catch (e) {
+		callback(e);
 	}
 };
