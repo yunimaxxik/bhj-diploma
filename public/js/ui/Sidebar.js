@@ -33,31 +33,31 @@ class Sidebar {
 	 * выходу устанавливает App.setState( 'init' )
 	 * */
 	static initAuthLinks() {
-		document.querySelector('.menu-item_login').addEventListener('click', () => {
-			const login = App.getModal('login');
-			login.open();
-		});
+		document
+			.querySelector('.menu-item_login')
+			.addEventListener('click', (e) => {
+				e.preventDefault();
+				const login = App.getModal('login');
+				login.open();
+			});
 
 		document
 			.querySelector('.menu-item_register')
-			.addEventListener('click', () => {
+			.addEventListener('click', (e) => {
+				e.preventDefault();
 				const register = App.getModal('register');
 				register.open();
 			});
 		document
 			.querySelector('.menu-item_logout')
-			.addEventListener('click', () => {
+			.addEventListener('click', (e) => {
+				e.preventDefault();
 				User.logout((err, response) => {
 					if (err) {
 						console.error('Ошибка при выходе:', err);
 						return;
 					}
-
-					if (response.success) {
-						App.setState('init');
-					} else {
-						console.warn('Выход не подтверждён сервером');
-					}
+					App.setState('init');
 				});
 			});
 	}

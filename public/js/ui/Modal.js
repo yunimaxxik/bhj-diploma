@@ -28,14 +28,14 @@ class Modal {
 	 * (с помощью метода Modal.onClose)
 	 * */
 	registerEvents() {
-		const closeElements = this.element.querySelectorAll(
+		const closeButtons = this.element.querySelectorAll(
 			'[data-dismiss="modal"]',
 		);
-		closeElements.forEach((element) => {
-			element._modalCloseHandler = this.onClose.bind(this);
-			element.removeEventListener('click', element._modalCloseHandler);
-
-			element.addEventListener('click', element._modalCloseHandler);
+		closeButtons.forEach((btn) => {
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				this.onClose();
+			});
 		});
 	}
 
@@ -43,9 +43,7 @@ class Modal {
 	 * Срабатывает после нажатия на элементы, закрывающие окно.
 	 * Закрывает текущее окно (Modal.close())
 	 * */
-	onClose(e) {
-		e.preventDefault();
-		e.stopPropagation();
+	onClose() {
 		this.close();
 	}
 	/**
@@ -59,6 +57,6 @@ class Modal {
 	 * Закрывает окно: удаляет CSS-свойство display
 	 * */
 	close() {
-		this.element.style.display = '';
+		this.element.style.display = 'none';
 	}
 }
