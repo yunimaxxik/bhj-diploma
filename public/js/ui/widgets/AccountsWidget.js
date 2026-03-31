@@ -61,14 +61,18 @@ class AccountsWidget {
 			return;
 		}
 
-		Account.list((err, response) => {
+		Account.list({}, (err, response) => {
 			if (err) {
 				console.error('Ошибка при получении списка счетов:', err);
 				return;
 			}
 
-			this.clear();
-			this.renderItems(response.data);
+			if (response && response.success && Array.isArray(response.data)) {
+				this.clear();
+				this.renderItems(response.data);
+			} else {
+				console.error('Некорректный ответ сервера:', response);
+			}
 		});
 	}
 
@@ -78,10 +82,8 @@ class AccountsWidget {
 	 * в боковой колонке
 	 * */
 	clear() {
-		const accountElements = document.querySelectorAll('.account');
-		accountElements.forEach((accountElement) => {
-			accountElement.remove();
-		});
+		const accounts = this.element.querySelectorAll('.account');
+		accounts.forEach((acc) => acc.remove());
 	}
 
 	/**
