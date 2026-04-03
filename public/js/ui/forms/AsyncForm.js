@@ -43,11 +43,7 @@ class AsyncForm {
 	 * */
 	getData() {
 		const formData = new FormData(this.element);
-		const data = {};
-		for (const [key, value] of formData.entries()) {
-			data[key] = value;
-		}
-		return data;
+		return Object.fromEntries(formData.entries());
 	}
 
 	onSubmit(options) {}
